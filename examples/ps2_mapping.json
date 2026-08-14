@@ -1,0 +1,38 @@
+{
+  "device": "Adaptador controle PS2 (indice 7)",
+  "layout": "playstation",
+  "report": {
+    "nota": "byte0 = Report ID; bytes 1-4 e 6 sao os que mudam com botoes; analógicos nos bytes analogicos",
+    "baseline": "07 80 82 8F 6F 8C 00 ..."
+  },
+  "buttons": {
+    "X (Cross)":      { "byte": 5, "press_value": "0x4F", "idle": "0x0F", "bits": ["bit6"] },
+    "Circle":         { "byte": 5, "press_value": "0x2F", "idle": "0x0F", "bits": ["bit5"] },
+    "Square":         { "byte": 5, "press_value": "0x8F", "idle": "0x0F", "bits": ["bit7"] },
+    "Triangle":       { "byte": 5, "press_value": "0x1F", "idle": "0x0F", "bits": ["bit4"] },
+    "L1":             { "byte": 6, "press_value": "0x04", "idle": "0x00", "bits": ["bit2"] },
+    "R1":             { "byte": 6, "press_value": "0x08", "idle": "0x00", "bits": ["bit3"] },
+    "L2":             { "byte": 6, "press_value": "0x01", "idle": "0x00", "bits": ["bit0"] },
+    "R2":             { "byte": 6, "press_value": "0x02", "idle": "0x00", "bits": ["bit1"] },
+    "Select/Share":   { "byte": 6, "press_value": "0x10", "idle": "0x00", "bits": ["bit4"] },
+    "Start/Options":  { "byte": 6, "press_value": "0x20", "idle": "0x00", "bits": ["bit5"] },
+    "L3":             { "byte": 4, "press_value": "0x92", "idle": "0x8C", "bits": ["bit1", "bit2", "bit3", "bit4"] },
+    "R3": {
+      "changes": {
+        "byte1": { "idle": "0x82", "press": "0x83", "bits": ["bit0"] },
+        "byte2": { "idle": "0x8F", "press": "0x9F", "bits": ["bit4"] },
+        "byte3": { "idle": "0x6F", "press": "0x78", "bits": ["bit0", "bit1", "bit2", "bit4"] },
+        "byte4": { "idle": "0x8C", "press": "0x81", "bits": ["bit0", "bit2", "bit3"] },
+        "byte6": { "idle": "0x00", "press": "0x80", "bits": ["bit7"] }
+      }
+    },
+    "PS/Home": {
+      "changes": {
+        "byte1": { "idle": "0x82", "press": "0x81", "bits": ["bit0", "bit1"] },
+        "byte2": { "idle": "0x8F", "press": "0x97", "bits": ["bit3", "bit4"] },
+        "byte3": { "idle": "0x6F", "press": "0x7C", "bits": ["bit0", "bit1", "bit4"] },
+        "byte4": { "idle": "0x8C", "press": "0x80", "bits": ["bit2", "bit3"] }
+      }
+    }
+  }
+}

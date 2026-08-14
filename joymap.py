@@ -185,18 +185,18 @@ def changed_vs_baseline(baseline, b):
 
 LAYOUTS = {
     "xbox": {
-        "name": "Xbox",
+        "name": "Xbox (A B X Y)",
         "labels": ["A", "B", "X", "Y", "LB", "RB", "LT", "RT",
                    "View", "Menu", "L3", "R3", "Guide"],
     },
     "playstation": {
-        "name": "PlayStation",
+        "name": "PlayStation (X O Square Triangle)",
         "labels": ["X (Cross)", "Circle", "Square", "Triangle",
                    "L1", "R1", "L2", "R2",
                    "Select/Share", "Start/Options", "L3", "R3", "PS/Home"],
     },
     "nintendo": {
-        "name": "Nintendo",
+        "name": "Nintendo (B A Y X)",
         "labels": ["B", "A", "Y", "X",
                    "L", "R", "ZL", "ZR",
                    "Minus", "Plus", "L3", "R3", "Home"],
@@ -234,7 +234,7 @@ LANGS = {
 }
 
 
-def export_json(mapping, layout, lang, fname=None):
+def export_json(mapping, layout, lang, fname=None, baseline=None):
     """Export result to JSON (auto if fname given, else asks)."""
     if fname is None:
         try:
@@ -252,7 +252,7 @@ def export_json(mapping, layout, lang, fname=None):
     import json
     data = {
         "layout": layout["name"],
-        "baseline": None,
+        "baseline": baseline.hex(" ") if baseline else None,
         "buttons": {},
     }
     for k, v in mapping.items():
@@ -380,7 +380,7 @@ def guided_map(dev, layout, lang, export_file=None, interativo=False):
         print(f"  {k:14s} -> {v}", flush=True)
     print("=" * 52, flush=True)
 
-    export_json(mapping, layout, lang, export_file)
+    export_json(mapping, layout, lang, export_file, baseline=baseline)
 
 
 def xinput_live():

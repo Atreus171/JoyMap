@@ -872,19 +872,20 @@ def run(args):
     vid = getattr(dev, "vendor_id", None)
     if _is_xinput_device(name, vid):
         if interativo:
-            # Xbox nao emite reports em modo HID -> oferecer leitura XInput
-            print("\n  [dica] dispositivo Xbox/XInput detectado. Em modo HID ele NAO emite "
-                  "reports,\n         por isso nao e possivel mapear via HID.\n")
+            # Xbox/XInput pode nao emitir reports em modo HID; oferece XInput,
+            # mas se o usuario disser "nao", segue para o mapeamento HID normal.
+            print("\n  [dica] dispositivo Xbox/XInput detectado. Em modo HID ele pode NAO "
+                  "emitir reports; se quiser, pode ler via XInput.\n")
             try:
                 want = input("         Ler em tempo real via XInput em vez disso? (s/n): ").strip().lower()
             except (EOFError, KeyboardInterrupt):
                 want = ""
             if want in ("s", "sim", "y", "yes"):
                 xinput_live()
-            else:
-                print("         Reabra e escolha 1) para mapear um controle nao-Xbox.\n")
-            return
-        print("  [aviso] Xbox/XInput: use --mode xinput (modo HID nao le este controle).")
+                return
+            # respondeu "nao": continua para o mapeamento HID
+        else:
+            print("  [aviso] Xbox/XInput: use --mode xinput (modo HID nao le este controle).")
 
     print(f"\nOpening: {dev.product_name!r}")
     try:

@@ -1,6 +1,6 @@
 # Descrição
 
-**JoyMap** — leitor e *mapeador de controles de videogame* para Windows.
+**JoyMap** — leitor de controles de videogame para Windows.
 
 Descobre **qual byte/bit** de cada botão de um controle muda ao ser pressionado,
 comparando cada *report* HID recebido com um *baseline* (estado de repouso). Ideal

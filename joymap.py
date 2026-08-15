@@ -819,7 +819,7 @@ def _menu_principal():
     ]
     while True:
         print("\n" + "=" * 52)
-        print("  JoyMap - leitor/mapeador de controles (Windows)")
+        print("  JoyMap - leitor de controles")
         print("=" * 52)
         for k, d in items:
             print(f"  {k}) {d}")

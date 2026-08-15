@@ -28,6 +28,150 @@ except ImportError:
     sys.exit("pywinusb not installed. Run: pip install pywinusb")
 
 
+# ---------------------------------------------------------------------------
+# Cabeçalho ASCII art (pixel/arcade, verde, glitch de entrada) - so visual,
+# nao altera nenhuma logica. Sem dependencias externas (ANSI via ctypes).
+# ---------------------------------------------------------------------------
+
+_HEADER_VERSION = "v1.1"
+
+# Fonte bitmap 5x7 propria, estilo pixel quadrado (nao arredondado).
+_PIXEL_FONT = {
+    "J": [
+        "01111",
+        "00010",
+        "00010",
+        "10010",
+        "01100",
+    ],
+    "O": [
+        "01110",
+        "10001",
+        "10001",
+        "10001",
+        "01110",
+    ],
+    "Y": [
+        "10001",
+        "10001",
+        "01110",
+        "00100",
+        "00100",
+    ],
+    "M": [
+        "10001",
+        "11011",
+        "10101",
+        "10001",
+        "10001",
+    ],
+    "A": [
+        "01110",
+        "10001",
+        "11111",
+        "10001",
+        "10001",
+    ],
+    "P": [
+        "11110",
+        "10001",
+        "11110",
+        "10000",
+        "10000",
+    ],
+    "R": [
+        "11110",
+        "10001",
+        "11110",
+        "10100",
+        "10001",
+    ],
+}
+
+_PIXEL_CHAR = "#"
+
+
+def _pixel_text(text):
+    """Converte texto em grade de pixels usando a fonte bitmap 5x7.
+    Retorna lista de linhas (strings) prontas para imprimir."""
+    text = text.upper()
+    rows = [""] * 5
+    for ch in text:
+        glyph = _PIXEL_FONT.get(ch)
+        if glyph is None:
+            glyph = ["00000"] * 5
+        for i in range(5):
+            row = "".join(_PIXEL_CHAR if c == "1" else " " for c in glyph[i])
+            rows[i] += row + "  "
+    return rows
+
+
+def _enable_ansi():
+    """Habilita cores ANSI no console do Windows (CMD/terminal) via ctypes."""
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        h = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+        mode = ctypes.c_uint32()
+        if kernel32.GetConsoleMode(h, ctypes.byref(mode)):
+            kernel32.SetConsoleMode(h, mode.value | 0x0004)  # ENABLE_VIRTUAL_TERMINAL_PROCESSING
+    except Exception:
+        pass
+
+
+def _term_width():
+    try:
+        return max(40, __import__("os").get_terminal_size().columns)
+    except Exception:
+        return 80
+
+
+def _print_ascii_header():
+    """Imprime o cabecalho ASCII art centralizado, verde, com glitch na entrada."""
+    if not sys.stdout.isatty():
+        return
+    _enable_ansi()
+    GREEN = "\033[92m"
+    DIM_GREEN = "\033[2;32m"
+    RESET = "\033[0m"
+
+    art = _pixel_text("JoyMap")
+    version = "  " + _HEADER_VERSION
+    width = _term_width()
+
+    lines = art + ["", version]
+    pad = max(0, (width - max(len(l) for l in art)) // 2)
+    pad_l = " " * pad
+
+    # --- glitch de entrada: desenha o cabecalho 3x piscando/deslocado ---
+    import random
+    glitch_frames = 3
+    for f in range(glitch_frames):
+        out = []
+        for li, l in enumerate(art):
+            line = l
+            if f < glitch_frames - 1:
+                # desloca 1..2 colunas e substitui alguns pixels aleatorios
+                shift = 1 if (li + f) % 2 == 0 else 2
+                if li == 2 and f == 1:
+                    shift = 4
+                line = " " * shift + l
+                rnd = list(line)
+                for _ in range(2 + li % 3):
+                    idx = random.randrange(len(rnd))
+                    if rnd[idx] == _PIXEL_CHAR:
+                        rnd[idx] = " "
+                line = "".join(rnd)
+            color = GREEN if f == glitch_frames - 1 else DIM_GREEN
+            print(color + pad_l + line + RESET, flush=True)
+        time.sleep(0.09)
+        if f < glitch_frames - 1:
+            print("\033[%dA" % len(art), end="", flush=True)  # sobe p/ redesenhar
+
+    print(GREEN + pad_l + version + RESET, flush=True)
+    print()
+
+
 def list_devices():
     all_devs = hid.find_all_hid_devices()
     print(f"\nFound {len(all_devs)} HID devices.\n")
@@ -1170,6 +1314,7 @@ def main():
     # Nenhum modo e nenhum indice: menu principal (duplo-clique)
     if args.mode is None and args.index is None:
         if sys.stdout.isatty():
+            _print_ascii_header()
             lang = LANGS[_detect_system_lang()]
             print(lang["lang_detected"].format(name=lang["name"]) + "\n")
             while True:

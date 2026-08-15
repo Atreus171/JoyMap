@@ -343,7 +343,7 @@ LANGS = {
 
 
 def _detect_system_lang():
-    """Detecta o idioma do sistema (Windows). Fallback: 'pt'."""
+    """Detecta o idioma do sistema (Windows). Fallback: 'en'."""
     try:
         import ctypes
         lcid = ctypes.windll.kernel32.GetUserDefaultUILanguage()
@@ -369,7 +369,7 @@ def _detect_system_lang():
             return "en"
     except Exception:
         pass
-    return "pt"
+    return "en"
 
 
 def export_json(mapping, layout, lang, fname=None, baseline=None):
@@ -986,20 +986,38 @@ def _menu_principal(lang):
 
 
 def _escolher_idioma(lang):
-    """Pergunta o idioma (pt/es/en) e retorna o codigo escolhido."""
-    print("\n" + "=" * 52)
-    print("  " + lang["choose_lang"])
-    print("=" * 52)
-    for i, code in enumerate(LANG_CODES, 1):
-        print(lang["lang_opt"].format(n=i, name=LANGS[code]["name"]))
-    print("=" * 52)
-    try:
-        n = int(input("\n" + lang["lang_prompt"].strip() or "1"))
-    except (ValueError, EOFError, KeyboardInterrupt):
-        n = 1
-    if 1 <= n <= len(LANG_CODES):
-        return LANG_CODES[n - 1]
-    return LANG_CODES[0]
+    """Pergunta o idioma (pt/es/en) e retorna o codigo escolhido.
+    Entrada invalida ou vazia mantem o idioma atual (lang) - nunca reverte
+    silenciosamente para outro idioma."""
+    codes = LANG_CODES
+    # o codigo atual eh a chave correspondente ao dict `lang`
+    current = LANG_CODES[0]
+    for code in codes:
+        if LANGS[code] is lang:
+            current = code
+            break
+    while True:
+        print("\n" + "=" * 52)
+        print("  " + lang["choose_lang"])
+        print("=" * 52)
+        for i, code in enumerate(codes, 1):
+            print(lang["lang_opt"].format(n=i, name=LANGS[code]["name"]))
+        print("=" * 52)
+        try:
+            raw = input("\n" + lang["lang_prompt"].strip())
+        except (EOFError, KeyboardInterrupt):
+            return current
+        raw = raw.strip()
+        if raw == "":
+            return current
+        try:
+            n = int(raw)
+        except ValueError:
+            print("  " + lang["menu_invalid"])
+            continue
+        if 1 <= n <= len(codes):
+            return codes[n - 1]
+        print("  " + lang["menu_invalid"])
 
 
 def run(args, lang=None):

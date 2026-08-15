@@ -1,1 +1,3 @@
+# Runtime dependencies (only needed to run from source).
+# The pre-built JoyMap.exe is fully standalone and needs no installation.
 pywinusb

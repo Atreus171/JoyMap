@@ -11,9 +11,11 @@ manual mapping (e.g. PS2 adapters, generic Bluetooth controllers).
 It also supports reading via **XInput** (Xbox controllers) and **DirectInput** (legacy controllers).
 
 ## Requirements
-- Windows (uses `hid.dll` via `pywinusb`, `xinput.dll`, `dinput8.dll`, `winmm.dll`)
-- Python 3.x
-- `pip install pywinusb`
+- **To use the pre-built executable:** Windows only — **no Python installation needed**.
+  `JoyMap.exe` is a self-contained single file (built with PyInstaller) that embeds the
+  Python interpreter and all modules (`pywinusb`, etc.). Whoever downloads the release
+  only needs that one file — no other files from this repo are required to run it.
+- **To build/develop from source:** Python 3.x + `pip install pywinusb`.
 
 ## Installation
 ```
@@ -25,7 +27,9 @@ pip install -r requirements.txt
 ## Usage
 
 ### Executable (without installing Python)
-Use the `JoyMap.exe` in the project root (built with PyInstaller — everything bundled).
+Use the `JoyMap.exe` in the project root (or from the release). It is a **standalone
+single file** — Python and `pywinusb` are already bundled inside. Download it, double-click,
+and it runs. It only uses Windows system DLLs already present on every Windows machine.
 
 **Double-click** opens an interactive menu:
 ```
@@ -136,3 +140,8 @@ At the end of the mapping, the script asks whether you want to export. The gener
 
 ## License
 MIT — see [LICENSE](LICENSE).
+
+---
+
+*This project was developed with [opencode](https://opencode.ai), an open-source AI
+coding assistant.*

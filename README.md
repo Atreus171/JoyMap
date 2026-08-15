@@ -28,15 +28,14 @@ Use o `JoyMap.exe` na raiz da pasta (buildado com PyInstaller — tudo embutido)
 **Duplo-clique** abre um menu interativo:
 ```
   1) Mapear controles HID (detectar byte/bit de cada botao)
-  2) Ler dispositivo em tempo real (XInput)
-  3) Digitar comando (ex: --mode dinput, --mode joy, 5 --map ...)
+  2) Digitar comando (ex: --mode xinput, --mode dinput, 5 --map ...)
   Ctrl+X para sair
 ```
 - Escolhendo `1` (HID), ele lista os dispositivos, pede o **número do dispositivo**,
   o **layout** e começa a perguntar **"APERTE e solte o botao AGORA"** para cada botão
   (A, B, X, Y...), registrando o byte/bit de cada um.
-- Escolhendo `2`, lê ao vivo via XInput (controles Xbox/360/One e GamePad Amazon).
-- Escolhendo `3`, digita um comando como `5 --map --layout xbox; --mode dinput`.
+- Escolhendo `2`, digita um comando como `5 --map --layout xbox`, `--mode xinput`
+  ou `--mode dinput`.
 
 > **Auto-detecção XInput:** controles Xbox (VID `0x045E`) e GamePad Amazon
 > (VID `0x1949`) são detectados automaticamente. Como eles **não enviam reports RAW

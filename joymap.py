@@ -791,8 +791,7 @@ def _menu_principal():
     Retorna ("modo", <modo>) | ("cmd", None) para digitar comando | None para sair (Ctrl+X)."""
     items = [
         ("1", "Mapear controles HID (detectar byte/bit de cada botao)"),
-        ("2", "Ler dispositivo em tempo real (XInput)"),
-        ("3", "Digitar comando (ex: --mode dinput, --mode joy, 5 --map ...)"),
+        ("2", "Digitar comando (ex: --mode xinput, --mode dinput, 5 --map ...)"),
     ]
     while True:
         print("\n" + "=" * 52)
@@ -812,12 +811,10 @@ def _menu_principal():
         r = r.strip()
         if r == "":
             continue  # Enter soa -> volta pro menu (nao fecha)
-        if r == "3":
+        if r == "2":
             return ("cmd", None)
         if r == "1":
             return ("modo", "hid")
-        if r == "2":
-            return ("modo", "xinput")
         if r in ("q", "quit"):
             return None
         print("Opcao invalida. Tente de novo.")

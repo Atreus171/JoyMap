@@ -29,11 +29,16 @@ Use o `JoyMap.exe` na raiz da pasta (buildado com PyInstaller — tudo embutido)
 ```
   1) Mapear controles HID (detectar byte/bit de cada botao)
   2) Digitar comando (ex: --mode xinput, --mode dinput, 5 --map ...)
+  3) Selecionar idioma (pt/es/en)
   Ctrl+X para sair
 ```
+- O **idioma é detectado automaticamente** do sistema (português, espanhol ou inglês),
+  mas a opção `3` permite trocar para outro a qualquer momento.
 - Escolhendo `1` (HID), ele lista os dispositivos, pede o **número do dispositivo**,
   o **layout** e começa a perguntar **"APERTE e solte o botao AGORA"** para cada botão
-  (A, B, X, Y...), registrando o byte/bit de cada um.
+  (A, B, X, Y...), registrando o byte/bit de cada um. Antes dos apertos, mostra a
+  **ordem de todos os botões** do layout escolhido, para você saber qual HID corresponde
+  a cada um ao final.
 - Escolhendo `2`, digita um comando como `5 --map --layout xbox`, `--mode xinput`
   ou `--mode dinput`.
 

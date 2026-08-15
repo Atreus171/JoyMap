@@ -204,13 +204,33 @@ LAYOUTS = {
 }
 
 
+LANG_CODES = ("pt", "es", "en")
+
 LANGS = {
     "pt": {
+        "name": "Português",
         "choose_lang": "Escolha o idioma:",
         "lang_opt": "  {n}) {name}",
-        "lang_prompt": "Idioma (1-2) [1]: ",
+        "lang_prompt": "Idioma (1-3) [1]: ",
+        "lang_detected": "Idioma detectado: {name}",
+        "menu_title": "JoyMap - leitor de controles",
+        "menu_map": "Mapear controles HID (detectar byte/bit de cada botao)",
+        "menu_cmd": "Digitar comando (ex: --mode xinput, --mode dinput, 5 --map ...)",
+        "menu_lang": "Selecionar idioma (pt/es/en)",
+        "menu_exit": "Ctrl+X para sair",
+        "menu_prompt": "Escolha uma opcao: ",
+        "menu_invalid": "Opcao invalida. Tente de novo.",
+        "cmd_prompt": "Digite o comando (ex: --mode dinput, --mode joy, 5 --map --layout xbox; Enter=menu, Ctrl+X=sai): ",
+        "dev_prompt": "Digite o numero do dispositivo para abrir (Ctrl+X para sair): ",
+        "dev_invalid": "Numero invalido. Tente de novo.",
+        "xinput_hint": "[dica] dispositivo Xbox/XInput detectado. Em modo HID ele pode NAO emitir reports; se quiser, pode ler via XInput.",
+        "xinput_ask": "Ler em tempo real via XInput em vez disso? (s/n): ",
+        "xinput_warn": "[aviso] Xbox/XInput: use --mode xinput (modo HID nao le este controle).",
+        "opening": "Abrindo: {name}",
+        "guide_intro": "Modo mapeamento guia: vamos mapear os botoes um por um. (Ctrl+X para cancelar)",
         "choose_layout": "Escolha o layout do controle:",
         "layout_prompt": "Layout (1-{n}) [1]: ",
+        "layout_unknown": "Layout '{key}' desconhecido. Usando xbox.",
         "no_report": "Nenhum report recebido. Confira se o controle esta conectado.",
         "baseline": "BASELINE (repouso)",
         "layout_label": "Layout",
@@ -225,13 +245,131 @@ LANGS = {
         "export_ask": "Exportar resultado em JSON? (s/N): ",
         "exported": "Exportado para: {path}",
         "open_fail": "Falha ao abrir dispositivo: {err}",
-"usage": {
-                "list": "  python -u joymap.py",
-                "single": "  python -u joymap.py <index>",
-                "map": "  python -u joymap.py <index> --map [--layout xbox|playstation|nintendo]",
-            },
+        "usage": {
+            "list": "  python -u joymap.py",
+            "single": "  python -u joymap.py <index>",
+            "map": "  python -u joymap.py <index> --map [--layout xbox|playstation|nintendo]",
+        },
+    },
+    "es": {
+        "name": "Español",
+        "choose_lang": "Elija el idioma:",
+        "lang_opt": "  {n}) {name}",
+        "lang_prompt": "Idioma (1-3) [1]: ",
+        "lang_detected": "Idioma detectado: {name}",
+        "menu_title": "JoyMap - lector de controles",
+        "menu_map": "Mapear controles HID (detectar byte/bit de cada botón)",
+        "menu_cmd": "Escribir comando (ej: --mode xinput, --mode dinput, 5 --map ...)",
+        "menu_lang": "Seleccionar idioma (pt/es/en)",
+        "menu_exit": "Ctrl+X para salir",
+        "menu_prompt": "Elija una opción: ",
+        "menu_invalid": "Opción inválida. Inténtelo de nuevo.",
+        "cmd_prompt": "Escriba el comando (ej: --mode dinput, --mode joy, 5 --map --layout xbox; Enter=menú, Ctrl+X=sale): ",
+        "dev_prompt": "Escriba el número del dispositivo para abrir (Ctrl+X para salir): ",
+        "dev_invalid": "Número inválido. Inténtelo de nuevo.",
+        "xinput_hint": "[aviso] dispositivo Xbox/XInput detectado. En modo HID quizás NO envíe reports; si quiere, puede leer por XInput.",
+        "xinput_ask": "¿Leer en tiempo real por XInput en su lugar? (s/n): ",
+        "xinput_warn": "[aviso] Xbox/XInput: use --mode xinput (el modo HID no lee este control).",
+        "opening": "Abriendo: {name}",
+        "guide_intro": "Modo de mapeo guiado: mapearemos los botones uno por uno. (Ctrl+X para cancelar)",
+        "choose_layout": "Elija la distribución del control:",
+        "layout_prompt": "Distribución (1-{n}) [1]: ",
+        "layout_unknown": "Distribución '{key}' desconocida. Usando xbox.",
+        "no_report": "No se recibió ningún report. Verifique que el control esté conectado.",
+        "baseline": "BASELINE (en reposo)",
+        "layout_label": "Distribución",
+        "button": "BOTÓN {i}/{total}:  {label}",
+        "press_btn": "PRESIONE y suelte el botón AHORA.",
+        "countd": "empieza en {c}...",
+        "detected": "detectado: {sig}",
+        "dup": "ATENCIÓN: diff ya asignado a [{btn}] - ignorado (anti-reasignación).",
+        "dup_hint": "PRESIONE OTRO botón o el correcto para esta ranura.",
+        "nothing": "NADA (no modifica este report)",
+        "final_header": "  MAPEO FINAL",
+        "export_ask": "¿Exportar resultado en JSON? (s/N): ",
+        "exported": "Exportado a: {path}",
+        "open_fail": "Fallo al abrir dispositivo: {err}",
+        "usage": {
+            "list": "  python -u joymap.py",
+            "single": "  python -u joymap.py <index>",
+            "map": "  python -u joymap.py <index> --map [--layout xbox|playstation|nintendo]",
+        },
+    },
+    "en": {
+        "name": "English",
+        "choose_lang": "Choose the language:",
+        "lang_opt": "  {n}) {name}",
+        "lang_prompt": "Language (1-3) [1]: ",
+        "lang_detected": "Detected language: {name}",
+        "menu_title": "JoyMap - game controller reader",
+        "menu_map": "Map HID controllers (detect byte/bit of each button)",
+        "menu_cmd": "Type a command (e.g. --mode xinput, --mode dinput, 5 --map ...)",
+        "menu_lang": "Select language (pt/es/en)",
+        "menu_exit": "Ctrl+X to exit",
+        "menu_prompt": "Choose an option: ",
+        "menu_invalid": "Invalid option. Try again.",
+        "cmd_prompt": "Type a command (e.g. --mode dinput, --mode joy, 5 --map --layout xbox; Enter=menu, Ctrl+X=exit): ",
+        "dev_prompt": "Type the device number to open (Ctrl+X to exit): ",
+        "dev_invalid": "Invalid number. Try again.",
+        "xinput_hint": "[hint] Xbox/XInput device detected. In HID mode it may NOT send reports; you can read via XInput instead.",
+        "xinput_ask": "Read live via XInput instead? (y/n): ",
+        "xinput_warn": "[warn] Xbox/XInput: use --mode xinput (HID mode cannot read this controller).",
+        "opening": "Opening: {name}",
+        "guide_intro": "Guided mapping mode: let's map the buttons one by one. (Ctrl+X to cancel)",
+        "choose_layout": "Choose the controller layout:",
+        "layout_prompt": "Layout (1-{n}) [1]: ",
+        "layout_unknown": "Unknown layout '{key}'. Using xbox.",
+        "no_report": "No report received. Check that the controller is connected.",
+        "baseline": "BASELINE (idle)",
+        "layout_label": "Layout",
+        "button": "BUTTON {i}/{total}:  {label}",
+        "press_btn": "PRESS and release the button NOW.",
+        "countd": "starting in {c}...",
+        "detected": "detected: {sig}",
+        "dup": "WARNING: diff already mapped to [{btn}] - ignored (anti-remap).",
+        "dup_hint": "Press ANOTHER button or the correct one for this slot.",
+        "nothing": "NOTHING (this report unchanged)",
+        "final_header": "  FINAL MAPPING",
+        "export_ask": "Export result as JSON? (y/N): ",
+        "exported": "Exported to: {path}",
+        "open_fail": "Failed to open device: {err}",
+        "usage": {
+            "list": "  python -u joymap.py",
+            "single": "  python -u joymap.py <index>",
+            "map": "  python -u joymap.py <index> --map [--layout xbox|playstation|nintendo]",
+        },
     },
 }
+
+
+def _detect_system_lang():
+    """Detecta o idioma do sistema (Windows). Fallback: 'pt'."""
+    try:
+        import ctypes
+        lcid = ctypes.windll.kernel32.GetUserDefaultUILanguage()
+        prim = lcid & 0x3FF  # Primary Language ID (bits 0-9)
+        pt = prim == 0x16 or lcid in (0x0816,)
+        if pt:
+            return "pt"
+        if prim == 0x0A:
+            return "es"
+        if prim == 0x09:
+            return "en"
+    except Exception:
+        pass
+    try:
+        import locale
+        loc = locale.getdefaultlocale()[0] or ""
+        low = loc.lower()
+        if low.startswith("pt"):
+            return "pt"
+        if low.startswith("es"):
+            return "es"
+        if low.startswith("en"):
+            return "en"
+    except Exception:
+        pass
+    return "pt"
 
 
 def export_json(mapping, layout, lang, fname=None, baseline=None):
@@ -268,7 +406,7 @@ def get_layout(layout_name, lang):
         key = layout_name.lower()
         if key in LAYOUTS:
             return LAYOUTS[key]
-        print(f"Layout '{key}' desconhecido. Usando xbox.")
+        print(lang["layout_unknown"].format(key=key))
         return LAYOUTS["xbox"]
     print("\n" + lang["choose_layout"])
     keys = list(LAYOUTS)
@@ -810,23 +948,24 @@ def _pause_if_console(msg="Pressione Enter para fechar..."):
         pass
 
 
-def _menu_principal():
+def _menu_principal(lang):
     """Menu interativo exibido no duplo-clique.
-    Retorna ("modo", <modo>) | ("cmd", None) para digitar comando | None para sair (Ctrl+X)."""
+    Retorna ("modo", <modo>) | ("cmd", None) | ("lang", None) | None para sair (Ctrl+X)."""
     items = [
-        ("1", "Mapear controles HID (detectar byte/bit de cada botao)"),
-        ("2", "Digitar comando (ex: --mode xinput, --mode dinput, 5 --map ...)"),
+        ("1", lang["menu_map"]),
+        ("2", lang["menu_cmd"]),
+        ("3", lang["menu_lang"]),
     ]
     while True:
         print("\n" + "=" * 52)
-        print("  JoyMap - leitor de controles")
+        print("  " + lang["menu_title"])
         print("=" * 52)
         for k, d in items:
             print(f"  {k}) {d}")
-        print("  Ctrl+X para sair")
+        print("  " + lang["menu_exit"])
         print("=" * 52)
         try:
-            r = input("\nEscolha uma opcao: ")
+            r = input("\n" + lang["menu_prompt"])
         except (EOFError, KeyboardInterrupt):
             return None
         # Ctrl+X (0x18) ou Ctrl+C (0x03) como caractere sai
@@ -835,19 +974,39 @@ def _menu_principal():
         r = r.strip()
         if r == "":
             continue  # Enter soa -> volta pro menu (nao fecha)
+        if r == "3":
+            return ("lang", None)
         if r == "2":
             return ("cmd", None)
         if r == "1":
             return ("modo", "hid")
         if r in ("q", "quit"):
             return None
-        print("Opcao invalida. Tente de novo.")
+        print("  " + lang["menu_invalid"])
 
 
-def run(args):
+def _escolher_idioma(lang):
+    """Pergunta o idioma (pt/es/en) e retorna o codigo escolhido."""
+    print("\n" + "=" * 52)
+    print("  " + lang["choose_lang"])
+    print("=" * 52)
+    for i, code in enumerate(LANG_CODES, 1):
+        print(lang["lang_opt"].format(n=i, name=LANGS[code]["name"]))
+    print("=" * 52)
+    try:
+        n = int(input("\n" + lang["lang_prompt"].strip() or "1"))
+    except (ValueError, EOFError, KeyboardInterrupt):
+        n = 1
+    if 1 <= n <= len(LANG_CODES):
+        return LANG_CODES[n - 1]
+    return LANG_CODES[0]
+
+
+def run(args, lang=None):
     """Dispatch logica a partir de args parseados. Reusavel pelo menu
     'digitar comando'."""
-    lang = LANGS["pt"]
+    if lang is None:
+        lang = LANGS[_detect_system_lang()]
     interativo = sys.stdout.isatty()
 
     if args.mode == "xinput":
@@ -869,7 +1028,7 @@ def run(args):
         # HID interativo (menu): pede o indice (Ctrl+X sai)
         while True:
             try:
-                raw = input("\nDigite o numero do dispositivo para abrir (Ctrl+X para sair): ")
+                raw = input("\n" + lang["dev_prompt"])
             except (EOFError, KeyboardInterrupt):
                 return
             if raw == "\x18" or raw == "\x03":
@@ -881,7 +1040,7 @@ def run(args):
                 args.index = int(raw)
                 break
             except ValueError:
-                print("Numero invalido. Tente de novo.")
+                print("  " + lang["dev_invalid"])
 
     if not (0 <= args.index < len(all_devs)):
         print(f"Indice {args.index} fora do intervalo (0..{len(all_devs)-1}).")
@@ -895,10 +1054,9 @@ def run(args):
         if interativo:
             # Xbox/XInput pode nao emitir reports em modo HID; oferece XInput,
             # mas se o usuario disser "nao", segue para o mapeamento HID normal.
-            print("\n  [dica] dispositivo Xbox/XInput detectado. Em modo HID ele pode NAO "
-                  "emitir reports; se quiser, pode ler via XInput.\n")
+            print("\n  " + lang["xinput_hint"] + "\n")
             try:
-                want = input("         Ler em tempo real via XInput em vez disso? (s/n): ").strip().lower()
+                want = input("         " + lang["xinput_ask"]).strip().lower()
             except (EOFError, KeyboardInterrupt):
                 want = ""
             if want in ("s", "sim", "y", "yes"):
@@ -906,9 +1064,9 @@ def run(args):
                 return
             # respondeu "nao": continua para o mapeamento HID
         else:
-            print("  [aviso] Xbox/XInput: use --mode xinput (modo HID nao le este controle).")
+            print("  " + lang["xinput_warn"])
 
-    print(f"\nOpening: {dev.product_name!r}")
+    print(f"\n{lang['opening'].format(name=dev.product_name)}")
     try:
         dev.open()
     except Exception as e:
@@ -926,7 +1084,7 @@ def run(args):
 
     if interativo:
         # duplo-clique: vai direto para mapeamento guia (precione A, B, X, ...)
-        print("\nModo mapeamento guia: vamos mapear os botoes um por um. (Ctrl+X para cancelar)")
+        print("\n" + lang["guide_intro"])
         layout = get_layout(args.layout, lang)
         try:
             guided_map(dev, layout, lang, interativo=interativo)
@@ -994,18 +1152,23 @@ def main():
     # Nenhum modo e nenhum indice: menu principal (duplo-clique)
     if args.mode is None and args.index is None:
         if sys.stdout.isatty():
+            lang = LANGS[_detect_system_lang()]
+            print(lang["lang_detected"].format(name=lang["name"]) + "\n")
             while True:
-                choice = _menu_principal()
+                choice = _menu_principal(lang)
                 if choice is None:
                     return
                 kind, val = choice
+                if kind == "lang":
+                    lang = LANGS[_escolher_idioma(lang)]
+                    continue
                 if kind == "modo":
                     args.mode = val
-                    run(args)
+                    run(args, lang=lang)
                     return
                 # kind == "cmd": digitar comando
                 try:
-                    raw_cmd = input("\nDigite o comando (ex: --mode dinput, --mode joy, 5 --map --layout xbox; Enter=menu, Ctrl+X=sai): ").strip()
+                    raw_cmd = input("\n" + lang["cmd_prompt"]).strip()
                 except (EOFError, KeyboardInterrupt):
                     raw_cmd = ""
                 # Ctrl+X para sair do comando
@@ -1020,7 +1183,7 @@ def main():
                     extra = parser.parse_args(shlex.split(raw_cmd))
                 except SystemExit:
                     sys.stderr = real_stderr
-                    print("Comando invalido. Tente de novo.")
+                    print(lang["menu_invalid"])
                     continue
                 finally:
                     sys.stderr = real_stderr
@@ -1034,14 +1197,14 @@ def main():
                 args.export = extra.export or args.export
                 if extra.layout is not None:
                     args.layout = extra.layout
-                run(args)
+                run(args, lang=lang)
                 return
         else:
             all_devs, _ = list_devices()
-            print("\nUso: " + LANGS["pt"]["usage"]["map"])
+            print("\nUso: " + LANGS[_detect_system_lang()]["usage"]["map"])
             return
 
-    run(args)
+    run(args, lang=LANGS[_detect_system_lang()])
 
 
 if __name__ == "__main__":

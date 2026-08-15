@@ -441,7 +441,7 @@ def xinput_live():
 
     BTN = {
         0x0001: "DPAD-UP", 0x0002: "DPAD-DOWN", 0x0004: "DPAD-LEFT", 0x0008: "DPAD-RIGHT",
-        0x0010: "START", 0x0020: "BACK", 0x0040: "L3", 0x0080: "R3",
+        0x0010: "Start", 0x0020: "Select", 0x0040: "L3", 0x0080: "R3",
         0x0100: "LB", 0x0200: "RB",
         0x1000: "A", 0x2000: "B", 0x4000: "X", 0x8000: "Y",
     }

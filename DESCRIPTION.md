@@ -1,19 +1,21 @@
-# Descrição
+# Description
 
-**JoyMap** — leitor de controles de videogame para Windows.
+**JoyMap** — video game controller reader for Windows.
 
-Descobre **qual byte/bit** de cada botão de um controle muda ao ser pressionado,
-comparando cada *report* HID recebido com um *baseline* (estado de repouso). Ideal
-para adaptadores/genéricos que exigem mapeamento manual (PS2, Bluetooth, etc.).
+It discovers **which byte/bit** of each button on a controller changes when pressed,
+by comparing every received HID *report* with a *baseline* (idle state). Ideal for
+adapters/generic controllers that require manual mapping (PS2, Bluetooth, etc.).
 
-Modos de leitura:
-- **HID** (pywinusb): mapeamento byte/bit + diff ao vivo — `joymap.py <indice> --map`
-- **XInput**: controles Xbox/360/One e GamePad Amazon — `--mode xinput`
-- **DirectInput**: controles legados — `--mode dinput`
-- **winmm**: joysticks via API legada — `--mode joy`
+Reading modes:
+- **HID** (pywinusb): byte/bit mapping + live diff — `joymap.py <index> --map`
+- **XInput**: Xbox/360/One controllers and Amazon GamePad — `--mode xinput`
+- **DirectInput**: legacy controllers — `--mode dinput`
+- **winmm**: joysticks via legacy API — `--mode joy`
 
-O `.exe` (build de console com PyInstaller) abre um **menu interativo** no
-duplo-clique, com **auto-detecção de controles XInput** (VID `0x045E`/`0x1949`)
-que redireciona para XInput em vez de travar no modo HID.
+The `.exe` (console build with PyInstaller) opens an **interactive menu** on
+double-click, with **automatic XInput controller detection** (VID `0x045E`/`0x1949`)
+that redirects to XInput instead of getting stuck in HID mode. The **language is
+detected automatically** from the system (Portuguese, Spanish or English) and can be
+changed from the menu.
 
-Feito/testado em Windows — *desenvolvido com [opencode](https://opencode.ai)*.
+Built/tested on Windows — *developed with [opencode](https://opencode.ai)*.

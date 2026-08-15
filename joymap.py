@@ -291,7 +291,9 @@ def guided_map(dev, layout, lang, export_file=None, interativo=False):
     dev.set_raw_data_handler(on_data)
 
     baseline = None
-    deadline = time.time() + 10
+    deadline = time.time() + 30
+    hint = False
+    print("\n  Aguardando report do controle...", flush=True)
     while baseline is None:
         if time.time() > deadline:
             print("\n  [aviso] nenhum report HID chegou. Se for controle Xbox/XInput,\n"
@@ -310,11 +312,33 @@ def guided_map(dev, layout, lang, export_file=None, interativo=False):
                 print("  Use: python -u joymap.py --mode xinput")
             return
         try:
-            baseline = q.get(timeout=0.5)
+            first = q.get(timeout=0.5)
         except _queue.Empty:
-            pass
+            if not hint and time.time() > 5:
+                hint = True
+                print("\n  [dica] o controle pode so enviar report quando voce aperta algo.\n"
+                      "         Aperte e solte QUALQUER botao agora para gerar o baseline.\n", flush=True)
+            continue
+        # O primeiro report pode ser de um botao apertado. Coleta por ~1.5s para
+        # o estado ocioso (botoes soltos) virar o baseline correto.
+        last = first
+        settle = time.time() + 1.5
+        while time.time() < settle:
+            try:
+                last = q.get(timeout=0.3)
+            except _queue.Empty:
+                pass
+        baseline = last
     print(f"\n{lang['baseline']}: {baseline.hex(' ')}", flush=True)
     print(f"{lang['layout_label']}: {layout['name']}\n", flush=True)
+
+    # Orientacao: lista todos os botoes do layout escolhido de uma vez
+    print("=" * 52, flush=True)
+    print("  ORDEM DOS BOTOES deste layout — ao final voce sabera o HID de cada:", flush=True)
+    print("=" * 52, flush=True)
+    for i, lbl in enumerate(layout["labels"], 1):
+        print(f"    {i:2d}) {lbl}", flush=True)
+    print("=" * 52 + "\n", flush=True)
 
     labels = layout["labels"]
     mapping = {}

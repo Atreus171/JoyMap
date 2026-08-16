@@ -1,4 +1,4 @@
-# JoyMap v1.0.0
+# JoyMap v1.1.0
 
 Fully standalone Windows tool for **mapping game controllers via HID**: it reveals
 which **byte/bit** of each button changes when you press it — perfect for PS2 adapters,

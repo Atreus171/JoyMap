@@ -38,13 +38,13 @@ _HEADER_VERSION = "v1.1"
 # Fonte bitmap 5x7 propria, estilo pixel quadrado/robusto (nao arredondado).
 _PIXEL_FONT = {
     "J": [
-        "11111",
-        "00001",
-        "00001",
-        "00001",
-        "10001",
-        "10001",
-        "01110",
+        "01111",
+        "00010",
+        "00010",
+        "00010",
+        "10010",
+        "10010",
+        "01100",
     ],
     "O": [
         "01110",
@@ -58,8 +58,8 @@ _PIXEL_FONT = {
     "Y": [
         "10001",
         "10001",
-        "10001",
-        "01110",
+        "01010",
+        "00100",
         "00100",
         "00100",
         "00100",
@@ -68,7 +68,7 @@ _PIXEL_FONT = {
         "10001",
         "11011",
         "10101",
-        "10001",
+        "10101",
         "10001",
         "10001",
         "10001",
@@ -136,8 +136,8 @@ def _term_width():
 
 
 def _print_ascii_header():
-    """Cabecalho arcade centralizado: moldura, gradiente verde com glow e
-    glitch de entrada (pisca/desloca antes do quadro final estavel)."""
+    """Cabecalho arcade alinhado a esquerda: moldura, gradiente verde com glow
+    e glitch de entrada (pisca/desloca antes do quadro final estavel)."""
     if not sys.stdout.isatty():
         return
     _enable_ansi()
@@ -149,7 +149,6 @@ def _print_ascii_header():
         return "\033[1;38;5;%dm" % n
 
     art = _pixel_text("JoyMap")
-    width = _term_width()
     art_w = max(len(l.rstrip()) for l in art)
     box_w = art_w + 4  # largura da area interna da moldura
 
@@ -174,13 +173,12 @@ def _print_ascii_header():
                 content = glitch_row(content, glitch)
             rows.append("| " + content.ljust(art_w) + " |"); cols.append(_GRAD[i])
         rows.append("| " + "-" * art_w + " |"); cols.append(40)
-        rows.append("| " + _HEADER_VERSION.center(art_w) + " |"); cols.append(46)
+        rows.append("| " + _HEADER_VERSION.ljust(art_w) + " |"); cols.append(46)
         rows.append("+" + "=" * (art_w + 2) + "+"); cols.append(46)
         return rows, cols
 
     def emit(plain, n):
-        pad = max(0, (width - len(plain)) // 2)
-        print(" " * pad + c(n) + plain + RESET, flush=True)
+        print(c(n) + plain + RESET, flush=True)
 
     frames = 3
     n_rows = len(make_rows()[0])

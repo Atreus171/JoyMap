@@ -201,10 +201,31 @@ def list_devices():
         name = (d.product_name or "") or "(no name)"
         vid = f"{d.vendor_id:04X}" if getattr(d, "vendor_id", None) is not None else "????"
         pid = f"{d.product_id:04X}" if getattr(d, "product_id", None) is not None else "????"
-        print(f"[{i:3}] {vid}:{pid}  {name!r}")
+        tag = _gamepad_tag(d)
+        print(f"[{i:3}] {vid}:{pid}  {name!r}{tag}")
         if "ipega" in name.lower() or "pg-" in name.lower() or "pg" == name.lower():
             matches.append((i, d))
     return all_devs, matches
+
+
+def _gamepad_tag(dev):
+    """Retorna '  <-- gamepad' se o device for um gamepad HID real (usage
+    page Generic Desktop + usage Joystick/Gamepad). Abre brevemente p/ ler caps."""
+    try:
+        dev.open()
+        try:
+            c = getattr(dev, "hid_caps", None)
+            if c is None:
+                return ""
+            page = getattr(c, "usage_page", None)
+            usage = getattr(c, "usage", None)
+            if page == 0x01 and usage in (0x04, 0x05, 0x08):
+                return "  <-- gamepad"
+            return ""
+        finally:
+            dev.close()
+    except Exception:
+        return ""
 
 
 def dump_descriptor(device):
@@ -595,30 +616,32 @@ def guided_map(dev, layout, lang, export_file=None, interativo=False):
 
     baseline = None
     deadline = time.time() + 30
-    hint = False
+    last_hint = 0.0
     print("\n  Aguardando report do controle...", flush=True)
     while baseline is None:
         if time.time() > deadline:
-            print("\n  [aviso] nenhum report HID chegou. Se for controle Xbox/XInput,\n"
-                  "          pode não emitir reports em modo HID.\n", flush=True)
+            print("\n  [aviso] nenhum report HID chegou de:\n"
+                  "          %s (%04X:%04X)\n"
+                  "          Isso costuma acontecer quando o indice selecionado na lista\n"
+                  "          NAO e a interface do gamepad (ex.: o par Bluetooth, mouse,\n"
+                  "          teclado ou 'consumer control'). Reabra, escolha a opcao de\n"
+                  "          mapear e tente OUTRO indice da lista.\n"
+                  % (getattr(dev, "product_name", "?") or "?",
+                     getattr(dev, "vendor_id", 0) or 0,
+                     getattr(dev, "product_id", 0) or 0), flush=True)
             if interativo:
                 try:
-                    want = input("  Ler via XInput em vez disso? (s/n): ").strip().lower()
+                    want = input("  Tentar novamente em outro indice? (s/n): ").strip().lower()
                 except (EOFError, KeyboardInterrupt):
                     want = ""
                 if want in ("s", "sim", "y", "yes"):
-                    xinput_live()
-                    return
-                else:
-                    print("  Reabra e use a opcao 2) (XInput) ou escolha um controle nao-Xbox.\n")
-            else:
-                print("  Use: python -u joymap.py --mode xinput")
-            return
+                    return "retry_index"
+            return None
         try:
             first = q.get(timeout=0.5)
         except _queue.Empty:
-            if not hint and time.time() > 5:
-                hint = True
+            if time.time() - last_hint > 5:
+                last_hint = time.time()
                 print("\n  [dica] o controle pode so enviar report quando voce aperta algo.\n"
                       "         Aperte e solte QUALQUER botao agora para gerar o baseline.\n", flush=True)
             continue
@@ -1267,12 +1290,45 @@ def run(args, lang=None):
 
     if interativo:
         # duplo-clique: vai direto para mapeamento guia (precione A, B, X, ...)
+        # Se o controle escolhido nao enviar report (indice errado), deixa
+        # tentar outro indice sem reiniciar o app.
         print("\n" + lang["guide_intro"])
         layout = get_layout(args.layout, lang)
-        try:
-            guided_map(dev, layout, lang, interativo=interativo)
-        finally:
-            dev.close()
+        while True:
+            try:
+                r = guided_map(dev, layout, lang, interativo=interativo)
+            finally:
+                dev.close()
+            if r != "retry_index":
+                break
+            print("\n" + lang["guide_intro"])
+            all_devs, _ = list_devices()
+            args.index = None
+            while True:
+                try:
+                    raw = input("\n" + lang["dev_prompt"])
+                except (EOFError, KeyboardInterrupt):
+                    return
+                if raw == "\x18" or raw == "\x03":
+                    return
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    idx = int(raw)
+                except ValueError:
+                    print("  " + lang["dev_invalid"])
+                    continue
+                if not (0 <= idx < len(all_devs)):
+                    print(f"Indice {idx} fora do intervalo (0..{len(all_devs)-1}).")
+                    continue
+                dev = all_devs[idx]
+                break
+            try:
+                dev.open()
+            except Exception as e:
+                _pause_if_console()
+                sys.exit(lang["open_fail"].format(err=e))
         _pause_if_console()
         return
 

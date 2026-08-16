@@ -29,23 +29,27 @@ except ImportError:
 
 
 # ---------------------------------------------------------------------------
-# Cabeçalho ASCII art (pixel/arcade, verde, glitch de entrada) - so visual,
-# nao altera nenhuma logica. Sem dependencias externas (ANSI via ctypes).
+# Cabecalho ASCII art (pixel/arcade, gradiente verde, moldura e glitch) -
+# apenas visual, nao altera nenhuma logica. Sem dependencias externas.
 # ---------------------------------------------------------------------------
 
 _HEADER_VERSION = "v1.1"
 
-# Fonte bitmap 5x7 propria, estilo pixel quadrado (nao arredondado).
+# Fonte bitmap 5x7 propria, estilo pixel quadrado/robusto (nao arredondado).
 _PIXEL_FONT = {
     "J": [
-        "01111",
-        "00010",
-        "00010",
-        "10010",
-        "01100",
+        "11111",
+        "00001",
+        "00001",
+        "00001",
+        "10001",
+        "10001",
+        "01110",
     ],
     "O": [
         "01110",
+        "10001",
+        "10001",
         "10001",
         "10001",
         "10001",
@@ -54,7 +58,9 @@ _PIXEL_FONT = {
     "Y": [
         "10001",
         "10001",
+        "10001",
         "01110",
+        "00100",
         "00100",
         "00100",
     ],
@@ -64,43 +70,46 @@ _PIXEL_FONT = {
         "10101",
         "10001",
         "10001",
+        "10001",
+        "10001",
     ],
     "A": [
         "01110",
         "10001",
+        "10001",
         "11111",
+        "10001",
         "10001",
         "10001",
     ],
     "P": [
         "11110",
         "10001",
+        "10001",
         "11110",
         "10000",
         "10000",
-    ],
-    "R": [
-        "11110",
-        "10001",
-        "11110",
-        "10100",
-        "10001",
+        "10000",
     ],
 }
 
 _PIXEL_CHAR = "#"
+_PIXEL_ROWS = 7
+
+# Gradiente verde 256-color (glow: centro mais claro, bordas mais escuras).
+_GRAD = [28, 40, 46, 46, 46, 40, 28]
 
 
 def _pixel_text(text):
     """Converte texto em grade de pixels usando a fonte bitmap 5x7.
     Retorna lista de linhas (strings) prontas para imprimir."""
     text = text.upper()
-    rows = [""] * 5
+    rows = [""] * _PIXEL_ROWS
     for ch in text:
         glyph = _PIXEL_FONT.get(ch)
         if glyph is None:
-            glyph = ["00000"] * 5
-        for i in range(5):
+            glyph = ["00000"] * _PIXEL_ROWS
+        for i in range(_PIXEL_ROWS):
             row = "".join(_PIXEL_CHAR if c == "1" else " " for c in glyph[i])
             rows[i] += row + "  "
     return rows
@@ -127,48 +136,62 @@ def _term_width():
 
 
 def _print_ascii_header():
-    """Imprime o cabecalho ASCII art centralizado, verde, com glitch na entrada."""
+    """Cabecalho arcade centralizado: moldura, gradiente verde com glow e
+    glitch de entrada (pisca/desloca antes do quadro final estavel)."""
     if not sys.stdout.isatty():
         return
     _enable_ansi()
-    GREEN = "\033[92m"
-    DIM_GREEN = "\033[2;32m"
+    import random
+
     RESET = "\033[0m"
 
+    def c(n):
+        return "\033[1;38;5;%dm" % n
+
     art = _pixel_text("JoyMap")
-    version = "  " + _HEADER_VERSION
     width = _term_width()
+    art_w = max(len(l.rstrip()) for l in art)
+    box_w = art_w + 4  # largura da area interna da moldura
 
-    lines = art + ["", version]
-    pad = max(0, (width - max(len(l) for l in art)) // 2)
-    pad_l = " " * pad
+    def glitch_row(content, glitch):
+        """Desloca a linha e apaga alguns pixels (efeito glitch)."""
+        shift = random.randint(1, 3)
+        chars = list((" " * shift + content).ljust(art_w))
+        for _ in range(2 + glitch):
+            pos = random.randrange(len(chars))
+            if chars[pos] == _PIXEL_CHAR:
+                chars[pos] = " "
+        return "".join(chars)
 
-    # --- glitch de entrada: desenha o cabecalho 3x piscando/deslocado ---
-    import random
-    glitch_frames = 3
-    for f in range(glitch_frames):
-        out = []
-        for li, l in enumerate(art):
-            line = l
-            if f < glitch_frames - 1:
-                # desloca 1..2 colunas e substitui alguns pixels aleatorios
-                shift = 1 if (li + f) % 2 == 0 else 2
-                if li == 2 and f == 1:
-                    shift = 4
-                line = " " * shift + l
-                rnd = list(line)
-                for _ in range(2 + li % 3):
-                    idx = random.randrange(len(rnd))
-                    if rnd[idx] == _PIXEL_CHAR:
-                        rnd[idx] = " "
-                line = "".join(rnd)
-            color = GREEN if f == glitch_frames - 1 else DIM_GREEN
-            print(color + pad_l + line + RESET, flush=True)
+    def make_rows(glitch=0):
+        """Monta o quadro completo (moldura + arte + versao). Retorna
+        lista de (linha_sem_cor, indice_da_cor)."""
+        rows, cols = [], []
+        rows.append("+" + "=" * (art_w + 2) + "+"); cols.append(46)
+        for i, l in enumerate(art):
+            content = l.rstrip()
+            if glitch:
+                content = glitch_row(content, glitch)
+            rows.append("| " + content.ljust(art_w) + " |"); cols.append(_GRAD[i])
+        rows.append("| " + "-" * art_w + " |"); cols.append(40)
+        rows.append("| " + _HEADER_VERSION.center(art_w) + " |"); cols.append(46)
+        rows.append("+" + "=" * (art_w + 2) + "+"); cols.append(46)
+        return rows, cols
+
+    def emit(plain, n):
+        pad = max(0, (width - len(plain)) // 2)
+        print(" " * pad + c(n) + plain + RESET, flush=True)
+
+    frames = 3
+    n_rows = len(make_rows()[0])
+    for f in range(frames):
+        glitch = 0 if f == frames - 1 else (1 if f == 0 else 2)
+        rows, cols = make_rows(glitch)
+        for plain, n in zip(rows, cols):
+            emit(plain, n)
         time.sleep(0.09)
-        if f < glitch_frames - 1:
-            print("\033[%dA" % len(art), end="", flush=True)  # sobe p/ redesenhar
-
-    print(GREEN + pad_l + version + RESET, flush=True)
+        if f < frames - 1:
+            print("\033[%dA" % n_rows, end="", flush=True)  # sobe p/ redesenhar
     print()
 
 

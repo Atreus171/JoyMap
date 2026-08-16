@@ -739,8 +739,8 @@ def guided_map(dev, layout, lang, export_file=None, interativo=False):
         print(f"  {k:14s} -> {v}", flush=True)
     print("=" * 52, flush=True)
     print(lang["dev_name"].format(name=getattr(dev, "product_name", "") or "(no name)"), flush=True)
-    print(lang["dev_vid"].format(vid=str(getattr(dev, "vendor_id", 0))), flush=True)
-    print(lang["dev_pid"].format(pid=str(getattr(dev, "product_id", 0))), flush=True)
+    print(lang["dev_vid"].format(vid=("%04X" % getattr(dev, "vendor_id", 0)) if getattr(dev, "vendor_id", None) is not None else "????"), flush=True)
+    print(lang["dev_pid"].format(pid=("%04X" % getattr(dev, "product_id", 0)) if getattr(dev, "product_id", None) is not None else "????"), flush=True)
     print("=" * 52, flush=True)
 
     export_json(mapping, layout, lang, export_file, baseline=baseline)

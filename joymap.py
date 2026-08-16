@@ -428,6 +428,9 @@ LANGS = {
         "dup_hint": "Aperte OUTRO botao ou o correto deste slot.",
         "nothing": "NADA (nao altera este report)",
         "final_header": "  MAPEAMENTO FINAL",
+        "dev_name": "  input_device    = \"{name}\"",
+        "dev_vid": "  input_vendor_id = {vid}",
+        "dev_pid": "  input_product_id = {pid}",
         "export_ask": "Exportar resultado em JSON? (s/N): ",
         "exported": "Exportado para: {path}",
         "open_fail": "Falha ao abrir dispositivo: {err}",
@@ -472,6 +475,9 @@ LANGS = {
         "dup_hint": "PRESIONE OTRO botón o el correcto para esta ranura.",
         "nothing": "NADA (no modifica este report)",
         "final_header": "  MAPEO FINAL",
+        "dev_name": "  input_device    = \"{name}\"",
+        "dev_vid": "  input_vendor_id = {vid}",
+        "dev_pid": "  input_product_id = {pid}",
         "export_ask": "¿Exportar resultado en JSON? (s/N): ",
         "exported": "Exportado a: {path}",
         "open_fail": "Fallo al abrir dispositivo: {err}",
@@ -516,6 +522,9 @@ LANGS = {
         "dup_hint": "Press ANOTHER button or the correct one for this slot.",
         "nothing": "NOTHING (this report unchanged)",
         "final_header": "  FINAL MAPPING",
+        "dev_name": "  input_device    = \"{name}\"",
+        "dev_vid": "  input_vendor_id = {vid}",
+        "dev_pid": "  input_product_id = {pid}",
         "export_ask": "Export result as JSON? (y/N): ",
         "exported": "Exported to: {path}",
         "open_fail": "Failed to open device: {err}",
@@ -697,24 +706,24 @@ def guided_map(dev, layout, lang, export_file=None, interativo=False):
         print("  " + lang["press_btn"] + "\n", flush=True)
 
         wait_idle(2)  # discard whatever is held from positioning
-        _detect_timeout = 15
+        _detect_deadline = time.time() + 15
         pressed_report = None
-        try:
-            while True:
-                b = q.get(timeout=_detect_timeout)  # waits until data arrives
-                d = changed_vs_baseline(baseline, b)
-                if d:
-                    sig = " | ".join(d)
-                    if sig in used:
-                        # já mapeado para outro botão -> não remapear
-                        print("  > " + lang["dup"].format(btn=used[sig]), flush=True)
-                        print("    " + lang["dup_hint"], flush=True)
-                        continue  # keep waiting; doesn't overwrite
-                    pressed_report = sig
-                    print("  > " + lang["detected"].format(sig=pressed_report), flush=True)
-                    break  # go to next button immediately
-        except _queue.Empty:
-            pass
+        while time.time() < _detect_deadline:
+            try:
+                b = q.get(timeout=0.5)
+            except _queue.Empty:
+                continue
+            d = changed_vs_baseline(baseline, b)
+            if d:
+                sig = " | ".join(d)
+                if sig in used:
+                    # já mapeado para outro botão -> não remapear
+                    print("  > " + lang["dup"].format(btn=used[sig]), flush=True)
+                    print("    " + lang["dup_hint"], flush=True)
+                    continue  # keep waiting; doesn't overwrite
+                pressed_report = sig
+                print("  > " + lang["detected"].format(sig=pressed_report), flush=True)
+                break  # go to next button immediately
 
         if pressed_report is None:
             print("  > " + lang["nothing"], flush=True)
@@ -728,6 +737,10 @@ def guided_map(dev, layout, lang, export_file=None, interativo=False):
     print("=" * 52, flush=True)
     for k, v in mapping.items():
         print(f"  {k:14s} -> {v}", flush=True)
+    print("=" * 52, flush=True)
+    print(lang["dev_name"].format(name=getattr(dev, "product_name", "") or "(no name)"), flush=True)
+    print(lang["dev_vid"].format(vid=str(getattr(dev, "vendor_id", 0))), flush=True)
+    print(lang["dev_pid"].format(pid=str(getattr(dev, "product_id", 0))), flush=True)
     print("=" * 52, flush=True)
 
     export_json(mapping, layout, lang, export_file, baseline=baseline)

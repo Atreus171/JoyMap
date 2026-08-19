@@ -1,8 +1,15 @@
-# JoyMap v1.1.1
+# JoyMap v1.2.0
 
 Fully standalone Windows tool for **mapping game controllers via HID**: it reveals
 which **byte/bit** of each button changes when you press it — perfect for PS2 adapters,
 generic Bluetooth controllers and any input device that needs manual mapping.
+
+## What's new in v1.2.0
+
+- **Auto gamepad selection**: when exactly one gamepad is detected (e.g. `Twin USB
+  Joystick`), JoyMap asks "Use this gamepad automatically? (y/N)" — press `y` and it
+  opens it directly, no index needed. If there are several (or you decline), it asks
+  for the index as usual.
 
 ## What's new in v1.1.1
 

@@ -33,7 +33,7 @@ except ImportError:
 # apenas visual, nao altera nenhuma logica. Sem dependencias externas.
 # ---------------------------------------------------------------------------
 
-_HEADER_VERSION = "v1.1.1"
+_HEADER_VERSION = "v1.2.0"
 
 # Fonte bitmap 5x7 propria, estilo pixel quadrado/robusto (nao arredondado).
 _PIXEL_FONT = {

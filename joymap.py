@@ -197,15 +197,18 @@ def list_devices():
     all_devs = hid.find_all_hid_devices()
     print(f"\nFound {len(all_devs)} HID devices.\n")
     matches = []
+    gamepads = []
     for i, d in enumerate(all_devs):
         name = (d.product_name or "") or "(no name)"
         vid = f"{d.vendor_id:04X}" if getattr(d, "vendor_id", None) is not None else "????"
         pid = f"{d.product_id:04X}" if getattr(d, "product_id", None) is not None else "????"
         tag = _gamepad_tag(d)
         print(f"[{i:3}] {vid}:{pid}  {name!r}{tag}")
+        if tag:
+            gamepads.append(i)
         if "ipega" in name.lower() or "pg-" in name.lower() or "pg" == name.lower():
             matches.append((i, d))
-    return all_devs, matches
+    return all_devs, matches, gamepads
 
 
 def _gamepad_tag(dev):
@@ -409,6 +412,8 @@ LANGS = {
         "cmd_prompt": "Digite o comando (ex: --mode dinput, --mode joy, 5 --map --layout xbox; Enter=menu, Ctrl+X=sai): ",
         "dev_prompt": "Digite o numero do dispositivo para abrir (Ctrl+X para sair): ",
         "dev_invalid": "Numero invalido. Tente de novo.",
+        "auto_gamepad": "  Gamepad detectado: [{idx}] {name}",
+        "auto_use": "  Usar este gamepad automaticamente? (s/N): ",
         "xinput_hint": "[dica] dispositivo Xbox/XInput detectado. Em modo HID ele pode NAO emitir reports; se quiser, pode ler via XInput.",
         "xinput_ask": "Ler em tempo real via XInput em vez disso? (s/n): ",
         "xinput_warn": "[aviso] Xbox/XInput: use --mode xinput (modo HID nao le este controle).",
@@ -456,6 +461,8 @@ LANGS = {
         "cmd_prompt": "Escriba el comando (ej: --mode dinput, --mode joy, 5 --map --layout xbox; Enter=menú, Ctrl+X=sale): ",
         "dev_prompt": "Escriba el número del dispositivo para abrir (Ctrl+X para salir): ",
         "dev_invalid": "Número inválido. Inténtelo de nuevo.",
+        "auto_gamepad": "  Gamepad detectado: [{idx}] {name}",
+        "auto_use": "  ¿Usar este gamepad automáticamente? (s/N): ",
         "xinput_hint": "[aviso] dispositivo Xbox/XInput detectado. En modo HID quizás NO envíe reports; si quiere, puede leer por XInput.",
         "xinput_ask": "¿Leer en tiempo real por XInput en su lugar? (s/n): ",
         "xinput_warn": "[aviso] Xbox/XInput: use --mode xinput (el modo HID no lee este control).",
@@ -503,6 +510,8 @@ LANGS = {
         "cmd_prompt": "Type a command (e.g. --mode dinput, --mode joy, 5 --map --layout xbox; Enter=menu, Ctrl+X=exit): ",
         "dev_prompt": "Type the device number to open (Ctrl+X to exit): ",
         "dev_invalid": "Invalid number. Try again.",
+        "auto_gamepad": "  Gamepad detected: [{idx}] {name}",
+        "auto_use": "  Use this gamepad automatically? (y/N): ",
         "xinput_hint": "[hint] Xbox/XInput device detected. In HID mode it may NOT send reports; you can read via XInput instead.",
         "xinput_ask": "Read live via XInput instead? (y/n): ",
         "xinput_warn": "[warn] Xbox/XInput: use --mode xinput (HID mode cannot read this controller).",
@@ -1238,28 +1247,43 @@ def run(args, lang=None):
         dinput_live()
         return
 
-    all_devs, _ = list_devices()
+    all_devs, _, gamepads = list_devices()
 
     if args.index is None:
         if not interativo:
             print("\nUso: " + lang["usage"]["map"])
             return
-        # HID interativo (menu): pede o indice (Ctrl+X sai)
-        while True:
+        # HID interativo (menu): se houver gamepad detectado, oferece usar direto
+        if len(gamepads) == 1:
+            g = gamepads[0]
+            gname = (getattr(all_devs[g], "product_name", "") or "(no name)")
+            print("\n" + lang["auto_gamepad"].format(idx=g, name=gname))
             try:
-                raw = input("\n" + lang["dev_prompt"])
+                want = input("  " + lang["auto_use"]).strip().lower()
             except (EOFError, KeyboardInterrupt):
-                return
-            if raw == "\x18" or raw == "\x03":
-                return
-            raw = raw.strip()
-            if not raw:
-                continue  # Enter vazio -> pergunta de novo
-            try:
-                args.index = int(raw)
-                break
-            except ValueError:
-                print("  " + lang["dev_invalid"])
+                want = ""
+            if want in ("s", "sim", "y", "yes"):
+                args.index = g
+            else:
+                args.index = None
+        # se houver mais de um gamepad, ou o usuario negou a auto-selecao,
+        # pede o indice normalmente (Ctrl+X sai)
+        if args.index is None:
+            while True:
+                try:
+                    raw = input("\n" + lang["dev_prompt"])
+                except (EOFError, KeyboardInterrupt):
+                    return
+                if raw == "\x18" or raw == "\x03":
+                    return
+                raw = raw.strip()
+                if not raw:
+                    continue  # Enter vazio -> pergunta de novo
+                try:
+                    args.index = int(raw)
+                    break
+                except ValueError:
+                    print("  " + lang["dev_invalid"])
 
     if not (0 <= args.index < len(all_devs)):
         print(f"Indice {args.index} fora do intervalo (0..{len(all_devs)-1}).")
@@ -1315,7 +1339,7 @@ def run(args, lang=None):
             if r != "retry_index":
                 break
             print("\n" + lang["guide_intro"])
-            all_devs, _ = list_devices()
+            all_devs, _, _ = list_devices()
             args.index = None
             while True:
                 try:
@@ -1453,7 +1477,7 @@ def main():
                 run(args, lang=lang)
                 return
         else:
-            all_devs, _ = list_devices()
+            all_devs, _, _ = list_devices()
             print("\nUso: " + LANGS[_detect_system_lang()]["usage"]["map"])
             return
 
